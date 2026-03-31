@@ -1,0 +1,7 @@
+package com.example.mydentist2.exception;
+
+public class UnauthorizedException extends RuntimeException {
+    public UnauthorizedException(String message) {
+        super(message);
+    }
+}

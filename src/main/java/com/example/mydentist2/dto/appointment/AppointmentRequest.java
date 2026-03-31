@@ -1,5 +1,6 @@
 package com.example.mydentist2.dto.appointment;
 
+import com.example.mydentist2.model.DentalServiceType;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,7 +18,10 @@ public class AppointmentRequest {
 
     @NotNull
     @Future
-    private LocalDateTime dateTime;
+    private LocalDateTime startTime;
+
+    @NotNull
+    private DentalServiceType serviceType;
 
     private String notes;
 }

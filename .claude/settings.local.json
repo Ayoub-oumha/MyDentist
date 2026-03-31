@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"try { JSON.parse\\(require\\(''fs''\\).readFileSync\\(''use case.mdj'',''utf-8''\\)\\); console.log\\(''use case.mdj: JSON valid''\\); } catch\\(e\\) { console.log\\(''use case.mdj: INVALID -'', e.message\\); }\")",
+      "Bash(node -e \"try { JSON.parse\\(require\\(''fs''\\).readFileSync\\(''Diagramme de classe.mdj'',''utf-8''\\)\\); console.log\\(''classe.mdj: JSON valid''\\); } catch\\(e\\) { console.log\\(''classe.mdj: INVALID -'', e.message\\); }\")",
+      "Bash(node -e \":*)",
+      "Bash(node gen_all.js)"
+    ]
+  }
+}

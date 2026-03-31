@@ -25,7 +25,17 @@ public class Appointment {
     private Dentist dentist;
 
     @Column(nullable = false)
-    private LocalDateTime dateTime;
+    private LocalDateTime startTime;
+
+    @Column(nullable = false)
+    private LocalDateTime endTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DentalServiceType serviceType;
+
+    @Column(nullable = false)
+    private int durationMinutes;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

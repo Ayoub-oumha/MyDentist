@@ -1,9 +1,11 @@
 package com.example.mydentist2.service.impl;
 
+import com.example.mydentist2.config.JwtService;
 import com.example.mydentist2.dto.auth.AuthResponse;
 import com.example.mydentist2.dto.auth.LoginRequest;
 import com.example.mydentist2.dto.auth.RegisterRequest;
-import com.example.mydentist2.exception.BusinessException;
+import com.example.mydentist2.exception.DuplicateResourceException;
+import com.example.mydentist2.exception.UnauthorizedException;
 import com.example.mydentist2.model.Dentist;
 import com.example.mydentist2.model.Patient;
 import com.example.mydentist2.model.User;
@@ -15,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -22,18 +26,18 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BusinessException("Email already in use: " + request.getEmail());
+            throw new DuplicateResourceException("Email already in use: " + request.getEmail());
         }
 
         User user = buildUser(request);
         userRepository.save(user);
 
-        // TODO: generate real JWT token
-        String token = "jwt-token-placeholder";
+        String token = generateToken(user);
         return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(), user.getRole());
     }
 
@@ -44,11 +48,19 @@ public class AuthServiceImpl implements AuthService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BusinessException("Invalid credentials"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
-        // TODO: generate real JWT token
-        String token = "jwt-token-placeholder";
+        String token = generateToken(user);
         return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(), user.getRole());
+    }
+
+    private String generateToken(User user) {
+        Map<String, Object> claims = Map.of(
+                "id", user.getId(),
+                "name", user.getName(),
+                "role", user.getRole().name()
+        );
+        return jwtService.generateToken(user.getEmail(), claims);
     }
 
     private User buildUser(RegisterRequest request) {

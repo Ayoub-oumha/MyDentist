@@ -1,15 +1,17 @@
 package com.example.mydentist2.controller;
 
-import com.example.mydentist2.dto.appointment.AppointmentRequest;
-import com.example.mydentist2.dto.appointment.AppointmentResponse;
+import com.example.mydentist2.dto.appointment.*;
 import com.example.mydentist2.model.Appointment;
+import com.example.mydentist2.model.DentalServiceType;
 import com.example.mydentist2.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,6 +20,8 @@ import java.util.List;
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
+
+    // ── CRUD ──────────────────────────────────────────────────────────────────
 
     @PostMapping
     public ResponseEntity<AppointmentResponse> create(@Valid @RequestBody AppointmentRequest request) {
@@ -55,5 +59,44 @@ public class AppointmentController {
     public ResponseEntity<Void> cancel(@PathVariable Long id) {
         appointmentService.cancel(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        appointmentService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ── CALENDAR ──────────────────────────────────────────────────────────────
+
+    @GetMapping("/dentist/{dentistId}/daily")
+    public ResponseEntity<List<AppointmentResponse>> getDailySchedule(
+            @PathVariable Long dentistId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(appointmentService.getDailySchedule(dentistId, date));
+    }
+
+    @GetMapping("/dentist/{dentistId}/weekly")
+    public ResponseEntity<List<AppointmentResponse>> getWeeklySchedule(
+            @PathVariable Long dentistId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate weekStart) {
+        return ResponseEntity.ok(appointmentService.getWeeklySchedule(dentistId, weekStart));
+    }
+
+    // ── AVAILABLE SLOTS ───────────────────────────────────────────────────────
+
+    @GetMapping("/dentist/{dentistId}/slots")
+    public ResponseEntity<List<TimeSlotResponse>> getAvailableSlots(
+            @PathVariable Long dentistId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam DentalServiceType serviceType) {
+        return ResponseEntity.ok(appointmentService.getAvailableSlots(dentistId, date, serviceType));
+    }
+
+    // ── SERVICES CATALOG ──────────────────────────────────────────────────────
+
+    @GetMapping("/services")
+    public ResponseEntity<List<DentalServiceResponse>> getAllServices() {
+        return ResponseEntity.ok(appointmentService.getAllServices());
     }
 }

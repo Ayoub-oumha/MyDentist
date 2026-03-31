@@ -2,7 +2,8 @@ package com.example.mydentist2.service.impl;
 
 import com.example.mydentist2.dto.payment.PaymentRequest;
 import com.example.mydentist2.dto.payment.PaymentResponse;
-import com.example.mydentist2.exception.BusinessException;
+import com.example.mydentist2.exception.DuplicateResourceException;
+import com.example.mydentist2.exception.InvalidOperationException;
 import com.example.mydentist2.exception.ResourceNotFoundException;
 import com.example.mydentist2.mapper.PaymentMapper;
 import com.example.mydentist2.model.Appointment;
@@ -33,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + request.getAppointmentId()));
 
         if (paymentRepository.findByAppointmentId(request.getAppointmentId()).isPresent()) {
-            throw new BusinessException("Payment already exists for appointment id: " + request.getAppointmentId());
+            throw new DuplicateResourceException("Payment already exists for appointment id: " + request.getAppointmentId());
         }
 
         Payment payment = paymentMapper.toEntity(request);
@@ -70,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse refund(Long id) {
         Payment payment = findById(id);
         if (payment.getStatus() != Payment.Status.COMPLETED) {
-            throw new BusinessException("Only completed payments can be refunded");
+            throw new InvalidOperationException("Only completed payments can be refunded");
         }
 
         // TODO: call Stripe refund API using payment.getStripePaymentId()

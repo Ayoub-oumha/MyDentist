@@ -1,9 +1,10 @@
 package com.example.mydentist2.service;
 
-import com.example.mydentist2.dto.appointment.AppointmentRequest;
-import com.example.mydentist2.dto.appointment.AppointmentResponse;
+import com.example.mydentist2.dto.appointment.*;
 import com.example.mydentist2.model.Appointment;
+import com.example.mydentist2.model.DentalServiceType;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AppointmentService {
@@ -16,9 +17,19 @@ public interface AppointmentService {
 
     List<AppointmentResponse> getByDentist(Long dentistId);
 
-    AppointmentResponse updateStatus(Long id, Appointment.Status status);
-
     AppointmentResponse update(Long id, AppointmentRequest request);
 
+    AppointmentResponse updateStatus(Long id, Appointment.Status status);
+
     void cancel(Long id);
+
+    void delete(Long id);
+
+    List<TimeSlotResponse> getAvailableSlots(Long dentistId, LocalDate date, DentalServiceType serviceType);
+
+    List<AppointmentResponse> getDailySchedule(Long dentistId, LocalDate date);
+
+    List<AppointmentResponse> getWeeklySchedule(Long dentistId, LocalDate weekStart);
+
+    List<DentalServiceResponse> getAllServices();
 }
