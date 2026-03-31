@@ -4,6 +4,7 @@ import com.example.mydentist2.config.JwtService;
 import com.example.mydentist2.dto.auth.AuthResponse;
 import com.example.mydentist2.dto.auth.LoginRequest;
 import com.example.mydentist2.dto.auth.RegisterRequest;
+import com.example.mydentist2.dto.auth.UserResponse;
 import com.example.mydentist2.exception.DuplicateResourceException;
 import com.example.mydentist2.exception.UnauthorizedException;
 import com.example.mydentist2.model.Dentist;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -52,6 +54,11 @@ public class AuthServiceImpl implements AuthService {
 
         String token = generateToken(user);
         return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(), user.getRole());
+    }
+
+    @Override
+    public List<UserResponse> getAllUsers() {
+        return   userRepository.findAll().stream().map() ;
     }
 
     private String generateToken(User user) {
